@@ -1,0 +1,330 @@
+<aura:component controller="HIC_EmailMessageControllerOnComm"
+                implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId"
+                access="global">
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+ <aura:attribute name="CustomInputvalue" type="string" default=""/>
+   <aura:attribute name="CustomInputvalueList" type="List" default=""/> 
+    <aura:attribute name="searchOptions" type="List" default="[]"/>
+    <aura:attribute name="options" type="List" default="[]"/>
+    <aura:attribute name="inputValue" type="String" default=""/>
+    <aura:attribute name="showDropdown" type="Boolean" default="false"/>
+    <aura:attribute name="ShowOptions" type="Boolean" default="false"/>
+        <aura:attribute name="CCShowOptions" type="Boolean" default="false"/>
+    <aura:attribute name="BCCShowOptions" type="Boolean" default="false"/>
+
+    <aura:attribute name="selectedValues" type="List" default="[]"/>
+    <aura:attribute name ="AttachmentsStorage" type="List" default="[]"/>
+    
+    <aura:attribute name="CCsearchOptions" type="List" default="[]"/>
+    <aura:attribute name="CCoptions" type="List" default="[]"/>
+    <aura:attribute name="CCinputValue" type="String" default=""/>
+    <aura:attribute name="CCshowDropdown" type="Boolean" default="false"/>
+    <aura:attribute name="CCselectedValues" type="List" default="[]"/>
+    
+    <aura:attribute name="BCCsearchOptions" type="List" default="[]"/>
+    <aura:attribute name="BCCoptions" type="List" default="[]"/>
+    <aura:attribute name="BCCinputValue" type="String" default=""/>
+    <aura:attribute name="BCCshowDropdown" type="Boolean" default="false"/>
+    <aura:attribute name="BCCselectedValues" type="List" default="[]"/>           
+    <!--Part 1 [for attribute declare]-->
+     <aura:attribute name="docNameReal" type="List" default="[]" />
+    <aura:attribute name="docNameRealTemp" type="List" default="[]" />
+    <aura:attribute name="attachment" type="attachment[]" />
+    <aura:attribute name="DocNameListFinal" type="string[]" />
+    <aura:attribute name="loaded" type="Boolean" default="false" />
+    <aura:attribute name="leadId" type="string" />
+    <aura:attribute name="email" type="string" />
+    <aura:attribute name="emailCC" type="List" default="[]" />
+    <aura:attribute name="emailBCC" type="List" default="[]" />
+    <aura:attribute name="subject" type="string" />
+    <aura:attribute name="body" type="string" />
+    <aura:attribute name="mailStatus" type="boolean" default="false" />
+    <aura:attribute name="emailfolderVSTemplateList" type="object[]" default="[]" />
+    <aura:attribute name="emailFolderList" type="object[]" default="[]" />
+    <aura:attribute name="emailTemplateList" type="object[]" default="[]" />
+    <aura:attribute name="emailbody" type="String" default="" />
+    <aura:attribute name="folderId1" type="String" default="" />
+    <aura:attribute name="templateIDs" type="String" default="" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.showSpinner}">
+    <div class="slds-spinner_container">
+        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+</aura:if>
+          
+    <div class="slds-modal__container">
+        <header class="slds-modal__header">
+            
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Email</h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <!---Part 2 [header part] -->
+            <!---Part 3 [message display part] -->
+            <aura:if isTrue="{!v.mailStatus}">
+                <div role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id"
+                     aria-describedby="prompt-message-wrapper"
+                     class="slds-modal slds-fade-in-open slds-modal--prompt">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--success slds-theme--alert-texture">
+                            <h2 class="slds-text-heading--medium" id="prompt-heading-id">Mail Status</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            
+                            <div>
+                                <p>Email Sent successfully</p>
+                            </div>
+                            
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--brand"
+                                    onclick="{!c.closeMessage}">Close</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>
+            </aura:if>
+            <div class="exampleHolder">
+                <aura:if isTrue="{! v.loaded }">
+                    <lightning:spinner alternativeText="Loading" />
+                </aura:if>
+            </div>
+            <!---Part 4 [mail form part]-->
+            <div class="slds-m-around--medium">
+                <div class="slds-container--medium">
+                    <div class="slds-form--stacked">
+                        <!--Test for template -->
+                        <label><b></b></label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element" aura:id="selectFolder">
+                                <label class="slds-form-element__label" for="select-Folder">Select Folder</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <select class="slds-select" id="select-Folder"
+                                                onchange="{!c.onSelectEmailFolder}">
+                                            <option value="">Please Select Folder</option>
+                                            <aura:iteration items="{!v.emailfolderVSTemplateList}" var="folder">
+                                                <option value="{!folder.folderId}">{!folder.folderName}</option>
+                                            </aura:iteration>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element" aura:id="selectTemplate">
+                                <label class="slds-form-element__label" for="select-Template">Select
+                                    Template</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <select class="slds-select" id="select-Template"
+                                                onchange="{!c.onSelectEmailTemplate}">
+                                            <option value="">Please Select Email Template</option>
+                                            <aura:iteration items="{!v.emailTemplateList}" var="template">
+                                                <option value="{!template.emailTemplateId}">
+                                                    {!template.emailTemplatename}</option>
+                                            </aura:iteration>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <lightning:input label="To Addresses"
+                                             value="{!v.inputValue}"
+                                             onclick="{!c.showDropdown}"
+                                             
+                                             onchange="{!c.handleInputChange}"
+                                             aura:id="toAddressInput"
+                                             />
+                            
+                            <aura:if isTrue="{!v.ShowOptions}">
+                            
+                            <div class="slds-scrollable_y" style="max-height: 200px;" aura:id="dropdown">
+                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                                    
+                                    <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                                        <aura:iteration items="{!v.searchOptions}" var="option">
+                                            <li role="presentation" class="slds-listbox__item">
+                                                <div onclick="{!c.selectOption}" data-value="{!option.value}" role="option" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_plain slds-media_small" tabindex="0">
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-truncate" title="{!option.label}">{!option.label}</span>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </aura:iteration>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                            
+                            </aura:if>
+                            
+                            
+                            
+                            <aura:if isTrue="{!not(empty(v.selectedValues))}">
+                                
+                                <div class="slds-grid slds-wrap"  >
+                                    <aura:iteration items="{!v.selectedValues}" var="selectedValue">
+                                        <div class="slds-col slds-size_1-of-6 slds-m-bottom_small">
+                                            <span class="slds-pill" style="margin-top: 10px;">
+                                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.removeSelectedValue}" alternativeText="Remove" value="{!selectedValue}" variant="bare" class="slds-m-left_x-small"/>
+                                                <span class="slds-truncate">{!selectedValue}</span>
+                                            </span>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                            
+                            <lightning:input label="CC Addresses"
+                                             value="{!v.CCinputValue}"
+                                             onclick="{!c.CCshowDropdown}"
+                                             
+                                             onchange="{!c.CChandleInputChange}"
+                                             />
+                            
+                            
+                            <aura:if isTrue="{!v.CCShowOptions}">
+                            <div class="slds-scrollable_y" style="max-height: 200px;">
+                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                                    
+                                    <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                                        <aura:iteration items="{!v.CCsearchOptions}" var="option">
+                                            <li role="presentation" class="slds-listbox__item">
+                                                <div onclick="{!c.CCselectOption}" data-value="{!option.value}" role="option" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_plain slds-media_small" tabindex="0">
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-truncate" title="{!option.label}">{!option.label}</span>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </aura:iteration>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                            </aura:if>
+                            
+                            <aura:if isTrue="{!not(empty(v.CCselectedValues))}">
+                                <div class="slds-grid slds-wrap"  >
+                                    <aura:iteration items="{!v.CCselectedValues}" var="selectedValue">
+                                        <div class="slds-col slds-size_1-of-6 slds-m-bottom_small">
+                                            <span class="slds-pill" style="margin-top: 10px;">
+                                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.CCremoveSelectedValue}" alternativeText="Remove" value="{!selectedValue}" variant="bare" class="slds-m-left_x-small"/>
+                                                <span class="slds-truncate">{!selectedValue}</span>
+                                            </span>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                            
+                            <lightning:input label="Bcc Addresses"
+                                             value="{!v.BCCinputValue}"
+                                             onclick="{!c.BCCshowDropdown}"
+                                             
+                                             onchange="{!c.BCChandleInputChange}"
+                                             />
+                            
+                            
+                            <aura:if isTrue="{!v.BCCShowOptions}">
+                            <div class="slds-scrollable_y" style="max-height: 200px;">
+                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                                    
+                                    <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                                        <aura:iteration items="{!v.BCCsearchOptions}" var="option">
+                                            <li role="presentation" class="slds-listbox__item">
+                                                <div onclick="{!c.BCCselectOption}" data-value="{!option.value}" role="option" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_plain slds-media_small" tabindex="0">
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-truncate" title="{!option.label}">{!option.label}</span>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </aura:iteration>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                            </aura:if>
+                            
+                            <aura:if isTrue="{!not(empty(v.BCCselectedValues))}">
+                                <div class="slds-grid slds-wrap"  >
+                                    <aura:iteration items="{!v.BCCselectedValues}" var="selectedValue">
+                                        <div class="slds-col slds-size_1-of-6 slds-m-bottom_small">
+                                            <span class="slds-pill" style="margin-top: 10px;">
+                                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.BCCremoveSelectedValue}" alternativeText="Remove" value="{!selectedValue}" variant="bare" class="slds-m-left_x-small"/>
+                                                <span class="slds-truncate">{!selectedValue}</span>
+                                            </span>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                             <lightning:input label="Custom Addresses"
+                                             value="{!v.CustomInputvalue}"
+                                            
+                                             />
+                            
+                            <!--   <div class="slds-form-element ">
+                                <label class="slds-form-element__label" for="CC">EmailCC</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputEmail class="slds-input" aura:id="emailCC" value="{!v.emailCC}"
+                                                    required="true" placeholder="abc@email.com" />
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="CC">EmailBCC</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputEmail class="slds-input" aura:id="emailBCC" value="{!v.emailBCC}"
+                                                    required="true" placeholder="abc@email.com" />
+                                </div>
+                            </div>-->
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="CC">Subject</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText class="slds-input" aura:id="subject" value="{!v.subject}"
+                                                  placeholder="Subject" />
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="textareaSample2">Mail Body</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:inputRichText aura:id="body" value="{!v.emailbody}" />
+                                </div>
+                            </div>
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <lightning:fileUpload label="Attachments"
+                                                      multiple="true"
+                                                      accept=".pdf, .png, .jpg, .jpeg"
+                                                      recordId="{!v.recordId}"
+                                                      onuploadfinished="{!c.handleUploadFinished}" />
+                            </div>
+                            <aura:if isTrue="{!not(empty(v.DocNameListFinal))}">
+                                <div class="slds-grid slds-wrap">
+                                    <aura:iteration items="{!v.DocNameListFinal}" var="attachment">
+                                        <div class="slds-col slds-size_1-of-6 slds-m-bottom_small">
+                                            <span class="slds-pill" style="margin-top: 10px;">
+                                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.removeAttachment}" alternativeText="Remove" value="{!attachment}" variant="bare" class="slds-m-left_x-small"/>
+                                                <span class="slds-truncate">{!attachment}</span>
+                                            </span>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                            
+                            <br />
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" onclick="{!c.closeMessage}">Cancel</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.sendMail}">Send</button>
+        </footer>
+    </div>
+    
+    
+</aura:component>
