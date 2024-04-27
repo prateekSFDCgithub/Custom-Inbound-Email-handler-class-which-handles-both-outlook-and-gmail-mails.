@@ -38,8 +38,11 @@ Using this Powerful Ticket creation class with the Email component in my this re
 
 Enhance your customer support and communication workflows by using the Salesforce Inbound Email Handler and Salesforce Customizable Email Sender Component(link: "https://github.com/prateekSFDCgithub/Salesforce-Customizable-Email-Sender-Component") together. Convert incoming emails into actionable ticket records within Salesforce, streamlining issue resolution and improving customer satisfaction.
 
-**If you are having problem in implementing feel free to
-Contact Salesforce Developer and Expert**
+**Facing any problem in implementing? Feel free to contact:**
+
 **Prateek Joshi**
+
+**(Salesforce Developer and Expert)**
+
 **(trzprateeksfdc@gmail.com)**
 
