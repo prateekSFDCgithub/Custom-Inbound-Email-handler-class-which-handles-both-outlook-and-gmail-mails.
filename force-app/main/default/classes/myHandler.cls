@@ -1,4 +1,5 @@
 public with sharing class myHandler implements Messaging.InboundEmailHandler {
+    //cc
     public Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope) {
         boolean OurEmployee = false;
         boolean NewSubject = false; 
