@@ -36,7 +36,7 @@ This Salesforce Inbound Email Handler is a powerful Apex class designed to effic
 
 Using this Powerful Ticket creation class with the Email component in my this repository "https://github.com/prateekSFDCgithub/Salesforce-Customizable-Email-Sender-Component" you can set up a free customer workstaion without buying expenses licemses of customer support experience cloud.
 
-Enhance your customer support and communication workflows with the Salesforce Inbound Email Handler and send email component(link: "https://github.com/prateekSFDCgithub/Salesforce-Customizable-Email-Sender-Component") together. Convert incoming emails into actionable ticket records within Salesforce, streamlining issue resolution and improving customer satisfaction.
+Enhance your customer support and communication workflows by using the Salesforce Inbound Email Handler and Salesforce Customizable Email Sender Component(link: "https://github.com/prateekSFDCgithub/Salesforce-Customizable-Email-Sender-Component") together. Convert incoming emails into actionable ticket records within Salesforce, streamlining issue resolution and improving customer satisfaction.
 
 if you are having problem in implementing
 Contact Salesforce Developer and Expert
